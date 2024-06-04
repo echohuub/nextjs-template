@@ -29,7 +29,7 @@ export function middleware(request: NextRequest) {
   if (pathname.startsWith(`/${i18n.defaultLocale}/`) || pathname === `/${i18n.defaultLocale}`) {
     // The incoming request is for /en/whatever, so we'll reDIRECT to /whatever
     return NextResponse.redirect(new URL(
-      pathname.replace(`/${i18n.defaultLocale}`, pathname === `${i18n.defaultLocale}` ? "/" : ""),
+      pathname.replace(`/${i18n.defaultLocale}`, pathname === `/${i18n.defaultLocale}` ? "/" : ""),
       request.url,
     ));
   }
@@ -41,12 +41,12 @@ export function middleware(request: NextRequest) {
 
   // Redirect if there is no locale
   if (pathnameIsMissingLocale) {
-    const locale = getLocale(request);
+    const locale = getLocale(request) || i18n.defaultLocale;
 
     // Now for EITHER /en or /nl (for example) we're going to tell Next.js that the request is for /en/whatever
     // or /nl/whatever, and then reWRITE the request to that it is handled properly.
     return NextResponse.rewrite(new URL(
-      `/${i18n.defaultLocale}${pathname}${request.nextUrl.search}`,
+      `/${locale}${pathname}${request.nextUrl.search}`,
       request.nextUrl.href,
     ),
     );
